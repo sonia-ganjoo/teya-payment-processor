@@ -3,11 +3,11 @@ package com.payments.teya;
 import com.payments.teya.config.AppLogger;
 import com.payments.teya.processor.InputProcessor;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+/**
+ * Main class for the program that reads input string
+ */
 public class AppMain {
     static Logger logger = AppLogger.getLogger("AppMain");
 
