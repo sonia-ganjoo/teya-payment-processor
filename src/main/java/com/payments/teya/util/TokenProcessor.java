@@ -1,10 +1,12 @@
 package com.payments.teya.util;
 
 import com.payments.teya.config.AppLogger;
-import com.payments.teya.model.FundDetails;
-import com.payments.teya.model.PaymentDetails;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 public class TokenProcessor {
@@ -14,10 +16,6 @@ public class TokenProcessor {
     private StringTokenizer stringTokenizer;
     public List<String> getPaymentsList(String tokenizedPayments) {
         return getTokensFromString(tokenizedPayments, COMMA_DELIMITER);
-    }
-
-    public List<String> getFundsList(String tokenizedFunds) {
-        return getTokensFromString(tokenizedFunds, COLON_DELIMITER);
     }
 
     public List<String> getTokensFromString(String tokenizedString, String delimiter) {
@@ -31,18 +29,17 @@ public class TokenProcessor {
         return tokenList;
     }
 
-    public Map<String, Double>  getFundsFromTokenList(String tokenizedFunds) {
+    public Map<String, Double> getFundsFromTokenList(String tokenizedFunds) {
         List<String> tokenizedFundsList = getTokensFromString(tokenizedFunds, COMMA_DELIMITER);
         Map<String, Double> fundsMap = new HashMap<>();
 
-        for (String payment : tokenizedFundsList) {
-            String[] paymentTokens = payment.split(COLON_DELIMITER);
-
-            try {
+        try {
+            for (String payment : tokenizedFundsList) {
+                String[] paymentTokens = payment.split(COLON_DELIMITER);
                 fundsMap.put(paymentTokens[0], Double.valueOf(paymentTokens[1]));
-            } catch (Exception e) {
-                logger.severe("Invalid funds file!" + e.getMessage());
             }
+        } catch (Exception e) {
+            logger.severe("Invalid funds file!" + e.getMessage());
         }
         return fundsMap;
     }

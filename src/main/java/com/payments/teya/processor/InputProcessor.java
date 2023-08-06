@@ -1,7 +1,6 @@
 package com.payments.teya.processor;
 
 import com.payments.teya.config.AppLogger;
-import com.payments.teya.model.FundDetails;
 import com.payments.teya.model.PaymentDetails;
 import com.payments.teya.util.TokenProcessor;
 
@@ -13,16 +12,16 @@ public class InputProcessor {
     private static final String PIPE_DELIMITER = "|";
 
     private TokenProcessor tokenProcessor;
-    private FeeProcessor feeProcessor;
+    private PaymentProcessor feeProcessor;
 
-    private BatchProcessor batchProcessor;
+    private OutputProcessor batchProcessor;
     public String generateBatchPayments(String fundsAndPayments) {
         String result = "";
         String availableFunds = "";
         String payments = "";
-        feeProcessor = new FeeProcessor();
+        feeProcessor = new PaymentProcessor();
         tokenProcessor = new TokenProcessor();
-        batchProcessor = new BatchProcessor();
+        batchProcessor = new OutputProcessor();
 
         List<String> tokensList = tokenProcessor.getTokensFromString(fundsAndPayments, PIPE_DELIMITER);
 

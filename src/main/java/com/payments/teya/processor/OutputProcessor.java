@@ -1,15 +1,13 @@
 package com.payments.teya.processor;
 
 import com.payments.teya.config.AppLogger;
-import com.payments.teya.model.FundDetails;
 import com.payments.teya.model.PaymentDetails;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class BatchProcessor {
+public class OutputProcessor {
     Logger logger = AppLogger.getLogger("BatchProcessor");
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
