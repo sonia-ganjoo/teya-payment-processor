@@ -4,9 +4,7 @@ import com.payments.teya.config.AppLogger;
 import com.payments.teya.model.FundDetails;
 import com.payments.teya.model.PaymentDetails;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class TokenProcessor {
@@ -33,23 +31,19 @@ public class TokenProcessor {
         return tokenList;
     }
 
-    public List<FundDetails> getFundsFromTokenList(String tokenizedFunds) {
+    public Map<String, Double>  getFundsFromTokenList(String tokenizedFunds) {
         List<String> tokenizedFundsList = getTokensFromString(tokenizedFunds, COMMA_DELIMITER);
-        List<FundDetails> fundDetailsList = new ArrayList<>();
+        Map<String, Double> fundsMap = new HashMap<>();
 
         for (String payment : tokenizedFundsList) {
             String[] paymentTokens = payment.split(COLON_DELIMITER);
 
             try {
-                FundDetails fundDetails = new FundDetails();
-                fundDetails.setCurrency(paymentTokens[0]);
-                fundDetails.setAmount(Double.valueOf(paymentTokens[1]));
-                fundDetailsList.add(fundDetails);
+                fundsMap.put(paymentTokens[0], Double.valueOf(paymentTokens[1]));
             } catch (Exception e) {
                 logger.severe("Invalid funds file!" + e.getMessage());
             }
         }
-
-        return fundDetailsList;
+        return fundsMap;
     }
 }
