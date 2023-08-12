@@ -1,123 +1,64 @@
 package com.payments.teya.processor;
 
 import com.payments.teya.config.AppLogger;
+import com.payments.teya.exceptions.InvalidInputException;
 import com.payments.teya.model.PaymentDetails;
-import com.payments.teya.util.NumbersUtil;
-import com.payments.teya.util.TokenProcessor;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static com.payments.teya.util.Constants.COLON_DELIMITER;
+import static com.payments.teya.util.Constants.PIPE_DELIMITER;
 
-/**
- * This class is to calculate processing fees and deduct from the amount
- * payable to the merchants.
- */
 public class PaymentProcessor {
-    Logger logger = AppLogger.getLogger("FeeProcessor");
 
-    private Map<String, Double> fundDetailsMap;
-
+    Logger logger = AppLogger.getLogger("PaymentProcessor");
     /**
-     * This method processed the payments and deducts
-     * processing fees from the merchant amounts
-     * @param paymentsList
-     * @param availableFunds
-     * @return list of payments to be included in the batch
+     * This method is responsible to return the output batch string
+     * @param fundsAndPayments input string
+     * @return the result string
      */
-    public List<PaymentDetails> getPaymentsAfterFees(List<String> paymentsList, String availableFunds) {
+    public String generateBatchPayments(String fundsAndPayments) throws InvalidInputException {
         TokenProcessor tokenProcessor = new TokenProcessor();
-        // get available funds in a hashmap
-        fundDetailsMap = tokenProcessor.getFundsFromTokenList(availableFunds);
+        FeeProcessor feeProcessor = new FeeProcessor();
+        ResultProcessor resultProcessor = new ResultProcessor();
+        BatchProcessor batchProcessor = new BatchProcessor();
 
-        //get list of objects so that fees can be calculated and debited from the amount
-        List<PaymentDetails> sortedObjectPaymentsList = getSortedObjectPaymentList(paymentsList);
+        String result;
 
-        //calculate processing fees and add to the
-        List<PaymentDetails> paymentListAvailableFunds = getBatchPaymentsList(sortedObjectPaymentsList);
+        // split input string into funds and payments
+        List<String> tokensList = tokenProcessor.getTokensFromString(fundsAndPayments,
+                PIPE_DELIMITER);
 
-        return paymentListAvailableFunds;
-    }
+        if (tokensList.size() == 2) {
+            // get funds string
+            String availableFunds = tokensList.get(0);
 
-    /**
-     * This method converts payments string into objects list and sorts the list
-     * @param paymentsList
-     * @return list of {@link com.payments.teya.model.PaymentDetails} object
-     */
-    private List<PaymentDetails> getSortedObjectPaymentList(List<String> paymentsList) {
-        List<PaymentDetails> paymentDetailsList = new ArrayList<>();
+            // get payments string
+            String payments = tokensList.get(1);
 
-        for (String payment : paymentsList) {
-            String[] paymentTokens = payment.split(COLON_DELIMITER);
-            Double paymentAmount = Double.valueOf(paymentTokens[2]);
+            logger.info("Read funds from input:::" + availableFunds);
+            logger.info("Read payments from input:::" + payments);
 
-            try {
-                // convert payment string to objects for traversing and calculation purpose
-                PaymentDetails paymentDetails = new PaymentDetails();
-                paymentDetails.setMerchantId(paymentTokens[0]);
-                paymentDetails.setCurrency(paymentTokens[1]);
-                paymentDetails.setAmount(NumbersUtil.getAmountAfterFeeDeduction(paymentAmount, paymentTokens[1]));
-                paymentDetailsList.add(paymentDetails);
-            } catch (Exception e) {
-                logger.severe("Error processing payment for merchant Id::" + paymentTokens[0] + "with error::" + e.getMessage());
-            }
+            // get list of multiple payment strings
+            List<String> paymentsList = tokenProcessor.getPaymentsFromString(payments);
+
+            // get Map of available funds with currency as key
+            Map<String, Double> fundDetailsMap = tokenProcessor.getFundsFromString(availableFunds);
+
+            // get list of payments after deducting processing fees
+            List<PaymentDetails> paymentAfterFeesList = feeProcessor.getPaymentsAfterFees(paymentsList);
+
+            //calculate processing fees and add to the
+            List<PaymentDetails> batchPaymentsList = batchProcessor.getBatchPaymentsList(paymentAfterFeesList, fundDetailsMap);
+
+            // resultant batch string
+            result = resultProcessor.getBatchPaymentResult(batchPaymentsList);
+            System.out.println(result);
+        } else {
+            throw new InvalidInputException("Invalid input received!");
         }
 
-        // Sort the list so that smaller amounts are calculated first to be added to the batch
-        Collections.sort(paymentDetailsList);
-
-        return paymentDetailsList;
-    }
-
-    /**
-     * This method returns final list of payments that are included in the batch
-     * @param paymentDetailsList
-     * @return list of {@link com.payments.teya.model.PaymentDetails} object
-     */
-    private List<PaymentDetails> getBatchPaymentsList(List<PaymentDetails> paymentDetailsList) {
-        List<PaymentDetails> paymentListAvailableFunds = new ArrayList<>();
-
-        for (PaymentDetails pd : paymentDetailsList) {
-            // include payments in the batch only if funds are available
-            if (includePaymentInBatch(pd.getCurrency(), pd.getAmount())) {
-                paymentListAvailableFunds.add(pd);
-            }
-        }
-        return paymentListAvailableFunds;
-    }
-
-    /**
-     * This method checks if a payment should be included in the batch
-     * based on the availability of the funds in Teya accounts
-     * @param currency
-     * @param paymentAmount
-     * @return boolean to indicate if a payment should be included
-     */
-    private boolean includePaymentInBatch(String currency, Double paymentAmount ) {
-        Double fundsAvailableForCurrency = 0.0;
-        try {
-            if (fundDetailsMap.size() > 0 && fundDetailsMap.containsKey(currency)) {
-                fundsAvailableForCurrency = fundDetailsMap.get(currency);
-            }
-
-            // calculate available funds in the account after payments are made for other merchants
-            Double fundsAvailableAfterPayment = fundsAvailableForCurrency - paymentAmount;
-
-            if (fundsAvailableAfterPayment > 0) {
-                // update available funds after processing other payments
-                Map<String, Double> updatedAvailableFunds = fundDetailsMap;
-                updatedAvailableFunds.put(currency, fundsAvailableAfterPayment);
-                fundDetailsMap = updatedAvailableFunds;
-                return true;
-            }
-        } catch (Exception e) {
-            logger.severe("Error decusting processing fees!!" +e.getMessage());
-        }
-
-        return false;
+        return result;
     }
 }

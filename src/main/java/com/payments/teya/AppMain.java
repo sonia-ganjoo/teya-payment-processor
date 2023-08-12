@@ -1,7 +1,8 @@
 package com.payments.teya;
 
 import com.payments.teya.config.AppLogger;
-import com.payments.teya.processor.InputProcessor;
+import com.payments.teya.exceptions.InvalidInputException;
+import com.payments.teya.processor.PaymentProcessor;
 
 import java.util.logging.Logger;
 
@@ -17,10 +18,14 @@ public class AppMain {
                 ",663:EUR:97.43,902:EUR:20.01";
 
         if (!input.isBlank()) {
-            InputProcessor inputProcessor = new InputProcessor();
-            inputProcessor.generateBatchPayments(input);
+            try {
+                PaymentProcessor paymentProcessor = new PaymentProcessor();
+                paymentProcessor.generateBatchPayments(input);
+            } catch (InvalidInputException e) {
+                logger.severe("Invalid input string");
+            }
         } else {
-            logger.warning("No input found!");
+            logger.severe("No input found!");
         }
     }
 }
