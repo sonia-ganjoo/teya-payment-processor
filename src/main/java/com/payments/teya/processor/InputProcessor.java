@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import static com.payments.teya.util.Constants.LINE_SEPARATOR;
+
 /**
  * class to read input from the file
  *  and get final result
@@ -39,7 +41,11 @@ public class InputProcessor {
 
                 if (!StringUtils.isBlank(line)) {
                     PaymentProcessor paymentProcessor = new PaymentProcessor();
-                    paymentProcessor.generateBatchPayments(line);
+                    String result = paymentProcessor.generateBatchPayments(line);
+                    // printing result here for the sake of convenience to see the
+                    // output when the program is run from command line
+                    System.out.println("Output String:::" + LINE_SEPARATOR + result);
+
                 } else {
                     throw new InvalidInputException("Empty input file!");
                 }

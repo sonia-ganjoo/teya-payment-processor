@@ -3,6 +3,7 @@ package com.payments.teya.testData;
 import com.payments.teya.model.PaymentDetails;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,14 +67,14 @@ public class TestDataProvider {
     public static List<PaymentDetails> testPaymentDetailsList() {
         List<PaymentDetails> paymentDetailsList = new ArrayList<>();
 
-        paymentDetailsList.add(new PaymentDetails("932","GBP", Double.valueOf("32.10")));
-        paymentDetailsList.add(new PaymentDetails("909","CZK", Double.valueOf("223.26")));
-        paymentDetailsList.add(new PaymentDetails("743", "EUR",Double.valueOf("5.76")));
-        paymentDetailsList.add(new PaymentDetails("23","CZK",  Double.valueOf("890.22")));
-        paymentDetailsList.add(new PaymentDetails("902","GBP", Double.valueOf("58.23")));
-        paymentDetailsList.add(new PaymentDetails("89","EUR",  Double.valueOf("104.25")));
-        paymentDetailsList.add(new PaymentDetails("663","EUR", Double.valueOf("97.43")));
-        paymentDetailsList.add(new PaymentDetails("902","EUR", Double.valueOf("20.01")));
+        paymentDetailsList.add(new PaymentDetails("932","GBP", 32.10));
+        paymentDetailsList.add(new PaymentDetails("909","CZK", 223.26));
+        paymentDetailsList.add(new PaymentDetails("743", "EUR", 5.76));
+        paymentDetailsList.add(new PaymentDetails("23","CZK",  890.22));
+        paymentDetailsList.add(new PaymentDetails("902","GBP", 58.23));
+        paymentDetailsList.add(new PaymentDetails("89","EUR",  104.25));
+        paymentDetailsList.add(new PaymentDetails("663","EUR", 97.43));
+        paymentDetailsList.add(new PaymentDetails("902","EUR", 20.01));
 
         return paymentDetailsList;
     }
@@ -81,6 +82,15 @@ public class TestDataProvider {
     public static Map<String, List<PaymentDetails>> testBatchHashMap() {
         return testPaymentDetailsList().stream()
                 .collect(Collectors.groupingBy(PaymentDetails::currency));
+    }
+
+    public static Map<String, Double> testFundsHashMap() {
+        Map<String, Double> funds = new HashMap<>();
+        funds.put("CZK", 1000.0);
+        funds.put("GBP", 100.0);
+        funds.put("EUR", 200.0);
+
+        return funds;
     }
 
     public static String expectedResultantString() {

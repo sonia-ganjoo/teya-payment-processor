@@ -22,7 +22,6 @@ public class PaymentProcessor {
         TokenProcessor tokenProcessor = new TokenProcessor();
         FeeProcessor feeProcessor = new FeeProcessor();
         ResultProcessor resultProcessor = new ResultProcessor();
-        BatchProcessor batchProcessor = new BatchProcessor();
 
         String result;
 
@@ -49,8 +48,9 @@ public class PaymentProcessor {
             // get list of payments after deducting processing fees
             List<PaymentDetails> paymentAfterFeesList = feeProcessor.getPaymentsAfterFees(paymentsList);
 
-            //calculate processing fees and add to the
-            List<PaymentDetails> batchPaymentsList = batchProcessor.getBatchPaymentsList(paymentAfterFeesList, fundDetailsMap);
+            //calculate processing fees and add to the batch
+            BatchProcessor batchProcessor = new BatchProcessor(fundDetailsMap);
+            List<PaymentDetails> batchPaymentsList = batchProcessor.getBatchPaymentsList(paymentAfterFeesList);
 
             // resultant batch string
             result = resultProcessor.getBatchPaymentResult(batchPaymentsList);
