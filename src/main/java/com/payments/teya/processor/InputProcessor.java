@@ -36,18 +36,20 @@ public class InputProcessor {
             if (property.isPresent()) {
                 Path path = Paths.get(property.get());
 
-                BufferedReader reader = Files.newBufferedReader(path);
-                String line = reader.readLine();
+                try (BufferedReader reader = Files.newBufferedReader(path)) {
 
-                if (!StringUtils.isBlank(line)) {
-                    PaymentProcessor paymentProcessor = new PaymentProcessor();
-                    String result = paymentProcessor.generateBatchPayments(line);
-                    // printing result here for the sake of convenience to see the
-                    // output when the program is run from command line
-                    System.out.println("Output String:::" + LINE_SEPARATOR + result);
+                    String line = reader.readLine();
 
-                } else {
-                    throw new InvalidInputException("Empty input file!");
+                    if (!StringUtils.isBlank(line)) {
+                        PaymentProcessor paymentProcessor = new PaymentProcessor();
+                        String result = paymentProcessor.generateBatchPayments(line);
+                        // printing result here for the sake of convenience to see the
+                        // output when the program is run from command line
+                        System.out.println("Output String:::" + LINE_SEPARATOR + result);
+
+                    } else {
+                        throw new InvalidInputException("Empty input file!");
+                    }
                 }
             } else {
                 throw new InvalidInputException("Path property not found in the properties file!");
