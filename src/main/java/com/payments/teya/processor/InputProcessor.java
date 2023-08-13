@@ -56,7 +56,7 @@ public class InputProcessor {
             } else {
                 throw new InvalidInputException("Path property not found in the properties file!");
             }
-        } catch (InvalidInputException e) {
+        } catch (InvalidInputException | IllegalArgumentException e) {
             logger.severe(e.getMessage());
         } catch (IOException e) {
             logger.severe("Error reading input file! " + e.getMessage());
