@@ -2,7 +2,7 @@ package com.payments.teya.processor;
 
 import com.payments.teya.config.AppLogger;
 import com.payments.teya.exceptions.InvalidInputException;
-import org.junit.platform.commons.util.StringUtils;
+import com.payments.teya.util.FileReader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -23,11 +23,14 @@ import static com.payments.teya.util.Constants.LINE_SEPARATOR;
 public class InputProcessor {
     static Logger logger = AppLogger.getLogger("InputProcessor");
 
+    public InputProcessor() {}
+
     /**
      * read from file and get result string
      */
     public void processInput() {
-        try (FileInputStream fileInputStream = new FileInputStream("src\\main\\java\\resources\\application.properties")) {
+        FileReader fileReader = new FileReader();
+        try (FileInputStream fileInputStream = new FileInputStream(fileReader.getResourceFile("resources/application.properties"))) {
             Properties props = new Properties();
             props.load(fileInputStream);
 
@@ -40,13 +43,12 @@ public class InputProcessor {
 
                     String line = reader.readLine();
 
-                    if (!StringUtils.isBlank(line)) {
+                    if (!line.isBlank()) {
                         PaymentProcessor paymentProcessor = new PaymentProcessor();
                         String result = paymentProcessor.generateBatchPayments(line);
                         // printing result here for the sake of convenience to see the
                         // output when the program is run from command line
                         System.out.println("Output String:::" + LINE_SEPARATOR + result);
-
                     } else {
                         throw new InvalidInputException("Empty input file!");
                     }

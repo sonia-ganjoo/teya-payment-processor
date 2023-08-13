@@ -54,7 +54,6 @@ public class PaymentProcessor {
 
             // resultant batch string
             result = resultProcessor.getBatchPaymentResult(batchPaymentsList);
-            System.out.println(result);
         } else {
             throw new InvalidInputException("Invalid input received!");
         }

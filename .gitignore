@@ -1,5 +1,6 @@
 ### IntelliJ IDEA ###
 out/
+classes/
 !**/src/main/**/out/
 !**/src/test/**/out/
 

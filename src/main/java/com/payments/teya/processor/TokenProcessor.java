@@ -2,7 +2,6 @@ package com.payments.teya.processor;
 
 import com.payments.teya.config.AppLogger;
 import com.payments.teya.exceptions.InvalidInputException;
-import org.junit.platform.commons.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class TokenProcessor {
      * @return list of string after splitting using given delimiter
      */
     public List<String> getTokensFromString(String tokenizedString, String delimiter) throws InvalidInputException {
-        if (StringUtils.isBlank(tokenizedString) || StringUtils.isBlank(delimiter)) {
+        if (tokenizedString.isEmpty() || delimiter.isEmpty()) {
             throw new InvalidInputException("Received empty payments string!");
         }
 
