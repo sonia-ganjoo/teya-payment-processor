@@ -1,5 +1,5 @@
 # teya-payment-processor
-Java version:  Java 19 (I haven't used any third-party framework)
+Java version:  Java 19, no thrid-party framework used
 
 External libraries: junit-jupiter-api-5.9.1.jar (for unit testing)
 Input: This program reads input from a text file, path to the file can be configured in the properties file named 'resource/application.properties'.
