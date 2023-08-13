@@ -11,7 +11,7 @@ public class FileReader {
                 .getResource(fileName);
 
         if(url == null) {
-            throw new IllegalArgumentException(fileName + " is not found 1");
+            throw new IllegalArgumentException(fileName + " is not found!");
         }
 
         return new File(url.getFile());
