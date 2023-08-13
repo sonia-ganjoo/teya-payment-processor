@@ -1,5 +1,5 @@
 # teya-payment-processor
-Java version:  Java 19, no thrid-party framework used
+Java version:  Java 19, no third-party framework used
 
 External libraries: junit-jupiter-api-5.9.1.jar (for unit testing)
 
